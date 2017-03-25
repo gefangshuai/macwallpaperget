@@ -42,6 +42,8 @@ class FetchService {
             val imgUrl = Jsoup.connect(imgPageUrl).get().body().select("div.pic-left>div>a").first().attr("abs:href")
             println("img url: $imgUrl")
             val filePath = "${output.removeSuffix("/")}/${imgUrl.substringAfterLast("/")}"
+            if(File(filePath).exists())
+                continue
             println("file save: $filePath")
             writeImg(imgUrl, filePath)
         }
