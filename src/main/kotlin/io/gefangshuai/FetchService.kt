@@ -11,17 +11,20 @@ import javax.imageio.ImageIO
 import java.io.FileOutputStream
 
 
-
 /**
  * Created by gefangshuai on 2017/3/25.
  */
-class FetchService {
+class FetchService() {
     private val url: String = "http://wallpapershome.com/download-wallpapers/macbook/"
-    var page: Int = 0
+    var page: Int = 1
+
+    constructor(page: Int) : this() {
+        this.page = page
+    }
+
     private fun getNextUrl(): String {
-        page ++
         if (page > 1)
-           return "$url?page=$page"
+            return "$url?page=$page"
         else
             return url
     }
@@ -34,7 +37,7 @@ class FetchService {
         val elements = document.select("img.hor").iterator()
         while (elements.hasNext()) {
             val img = elements.next()
-            if(img.attr("src").contains("ads"))
+            if (img.attr("src").contains("ads"))
                 continue
             val element = img.parent()
             val imgPageUrl = element.attr("abs:href")
@@ -42,16 +45,17 @@ class FetchService {
             val imgUrl = Jsoup.connect(imgPageUrl).get().body().select("div.pic-left>div>a").first().attr("abs:href")
             println("img url: $imgUrl")
             val filePath = "${output.removeSuffix("/")}/${imgUrl.substringAfterLast("/")}"
-            if(File(filePath).exists())
+            if (File(filePath).exists())
                 continue
             println("file save: $filePath")
             writeImg(imgUrl, filePath)
         }
+        page++
         fetch(output)
     }
 
 
-    fun writeImg(imgUrl: String, path: String){
+    fun writeImg(imgUrl: String, path: String) {
         val url = URL(imgUrl)
         val inp = url.openStream()
         val os = FileOutputStream(path)
