@@ -1,14 +1,10 @@
 package io.gefangshuai
 
-import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.jsoup.Jsoup
-import java.io.BufferedInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.net.URL
-import javax.imageio.ImageIO
 import java.io.FileOutputStream
+import java.net.URL
 
 
 /**
@@ -33,6 +29,7 @@ class FetchService() {
     fun fetch(output: String) {
         println("-------start fetch page $page--------")
         val currentUrl = getNextUrl()
+        println("current url: $currentUrl")
         val document = Jsoup.connect(currentUrl).get()
         val elements = document.select("img.hor").iterator()
         while (elements.hasNext()) {
@@ -45,8 +42,6 @@ class FetchService() {
             val imgUrl = Jsoup.connect(imgPageUrl).get().body().select("div.pic-left>div>a").first().attr("abs:href")
             println("img url: $imgUrl")
             val filePath = "${output.removeSuffix("/")}/${imgUrl.substringAfterLast("/")}"
-            if (File(filePath).exists())
-                continue
             println("file save: $filePath")
             writeImg(imgUrl, filePath)
         }
